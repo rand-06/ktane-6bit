@@ -165,7 +165,10 @@ public class script : MonoBehaviour {
     void XORN(int a) { colortable[counter]  = 63 - (colortable[counter] ^ (9 * a)); }
     void SETN(int a) { colortable[counter]  = 63 - (9 * a); }
     void CREG(int A) { sreg = colortable[A];}
-    void CNRG(int A) { sreg = 63-colortable[A]; }
+    //void CNRG(int A) { sreg = 63-colortable[A]; }
+    void MOV(int a, int b){ // move Ra into Rb; MOV r0,r0 = NOP.
+        reg[b] = reg[a];
+    }
     void ACO(int n, int a)
     {
         int ans = reg[a];
@@ -176,7 +179,7 @@ public class script : MonoBehaviour {
     {
         int ans = reg[a];
         for (int i = 0; i < n; i++) ans = invgray[ans];
-        ans = reg[a];
+        reg[a] = ans;
     }
     void WRI(int A)
     {
