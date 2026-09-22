@@ -14,14 +14,13 @@ public class script : MonoBehaviour {
     private int counter = 0;
     private int sreg = 0;
 
-    private readonly int[] invgray =
-        { 0, 1, 3, 2, 7, 6, 4, 5, 15, 14, 12, 13,
-            8, 9, 11, 10, 31, 30, 28, 29, 24, 25,
-            27, 26, 16, 17, 19, 18, 23, 22, 20, 21,
-            63, 62, 60, 61, 56, 57, 59, 58, 48, 49,
-            51, 50, 55, 54, 52, 53, 32, 33, 35, 34,
-            39, 38, 36, 37, 47, 46, 44, 45, 40, 41, 43, 42 };
-
+    //private readonly int[] invgray =
+    //    { 0, 1, 3, 2, 7, 6, 4, 5, 15, 14, 12, 13,
+    //        8, 9, 11, 10, 31, 30, 28, 29, 24, 25,
+    //        27, 26, 16, 17, 19, 18, 23, 22, 20, 21,
+    //        63, 62, 60, 61, 56, 57, 59, 58, 48, 49,
+    //        51, 50, 55, 54, 52, 53, 32, 33, 35, 34,
+    //        39, 38, 36, 37, 47, 46, 44, 45, 40, 41, 43, 42 };
 
     private const string charTable = "\tabcdefg0123456789.,!@#$ABCDEFGHIJKLMNOPQRSTUVWXYZ^&*-+=~?<>[]()";
     private const string base36 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -136,13 +135,13 @@ public class script : MonoBehaviour {
     void BRCS(int A){if ((sreg & (1 << 1)) != 0) JMP(A);}
     void BRMI(int A){if ((sreg & (1 << 2)) != 0) JMP(A);}
     void BRVS(int A){if ((sreg & (1 << 3)) != 0) JMP(A);}
-    void BRHS(int A){if ((sreg & (1 << 4)) != 0) JMP(A);}
+    void BRLT(int A){if ((sreg & (1 << 4)) != 0) JMP(A);}
     void BRIS(int A){if ((sreg & (1 << 5)) != 0) JMP(A);}
     void BRNE(int A){if ((sreg & (1 << 0)) == 0) JMP(A);}
     void BRCC(int A){if ((sreg & (1 << 1)) == 0) JMP(A);}
     void BRPL(int A){if ((sreg & (1 << 2)) == 0) JMP(A);}
     void BRVC(int A){if ((sreg & (1 << 3)) == 0) JMP(A);}
-    void BRHC(int A){if ((sreg & (1 << 4)) == 0) JMP(A);}
+    void BRGE(int A){if ((sreg & (1 << 4)) == 0) JMP(A);}
     void BRIC(int A){if ((sreg & (1 << 5)) == 0) JMP(A);}
     void SEF(int A) { sreg |= A; }
     void CLF(int A) { sreg &= A; }
@@ -169,18 +168,18 @@ public class script : MonoBehaviour {
     void MOV(int a, int b){ // move Ra into Rb; MOV r0,r0 = NOP.
         reg[b] = reg[a];
     }
-    void ACO(int n, int a)
-    {
-        int ans = reg[a];
-        for (int i = 0; i < n; i++) ans ^= (ans >> 1);
-        reg[a] = ans;
-    }
-    void IACO(int n, int a)
-    {
-        int ans = reg[a];
-        for (int i = 0; i < n; i++) ans = invgray[ans];
-        reg[a] = ans;
-    }
+    //void ACO(int n, int a)
+    //{
+    //    int ans = reg[a];
+    //    for (int i = 0; i < n; i++) ans ^= (ans >> 1);
+    //    reg[a] = ans;
+    //}
+    //void IACO(int n, int a)
+    //{
+    //    int ans = reg[a];
+    //    for (int i = 0; i < n; i++) ans = invgray[ans];
+    //    reg[a] = ans;
+    //}
     void WRI(int A)
     {
         int ans = (base36.IndexOf(sn[snc%6]) * 36 + base36.IndexOf(sn[(snc + 1)%6]))%64;
