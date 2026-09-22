@@ -26,7 +26,7 @@ public class script : MonoBehaviour {
     private const string base36 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private string sn;
     private int snc = 0;
-    private string code = "";
+    private string data = "";
     private int[] colortable = new int[64];
     private Color[] colors = new Color[64];
 
@@ -74,7 +74,7 @@ public class script : MonoBehaviour {
     }
     void LDS(int a, int B)
     {
-        reg[a] = getNum(code[B]);
+        reg[a] = getNum(data[B]);
     }
     void LDI(int a, int B)
     {
@@ -82,7 +82,7 @@ public class script : MonoBehaviour {
     }
     void STS(int a, int B)
     {
-        code = code.Remove(B, 1).Insert(B, getChar(reg[a]));
+        data = data.Remove(B, 1).Insert(B, getChar(reg[a]));
     }
     void JMP(int A)
     {
@@ -176,13 +176,13 @@ public class script : MonoBehaviour {
     void WRI(int A)
     {
         int ans = (base36.IndexOf(sn[snc%6]) * 36 + base36.IndexOf(sn[(snc + 1)%6]))%64;
-        code = code.Remove(A, 1).Insert(A, getChar(ans));
+        data = data.Remove(A, 1).Insert(A, getChar(ans));
         snc++;
     }
     void WRIN(int A)
     {
         int ans = (base36.IndexOf(sn[snc % 6]) * 36 + base36.IndexOf(sn[(snc + 1) % 6])) % 64;
-        code = code.Remove(A, 1).Insert(A, getChar(63-ans));
+        data = data.Remove(A, 1).Insert(A, getChar(63-ans));
         snc++;
     }
 
@@ -196,7 +196,7 @@ public class script : MonoBehaviour {
         {
             string n = getChar(Random.Range(1, 64));
             symbols[i].text = n;
-            code += n;
+            data += n;
             int c = Random.Range(1, 64);
             symbols[i].color = colors[c];
             colortable[i] = c;
