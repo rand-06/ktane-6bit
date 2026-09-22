@@ -74,7 +74,7 @@ public class script : MonoBehaviour {
     }
     void LDS(int a, int B)
     {
-        reg[a] = getNum(charTable[B]);
+        reg[a] = getNum(code[B]);
     }
     void LDI(int a, int B)
     {
@@ -155,14 +155,7 @@ public class script : MonoBehaviour {
         reg[b] = reg[a];
         reg[a] = temp;
     }
-    void ANDC(int a) { colortable[counter] &= 9 * a; }
-    void  ORC(int a) { colortable[counter] |= 9 * a; }
-    void XORC(int a) { colortable[counter] ^= 9 * a; }
-    void SETC(int a) { colortable[counter]  = 9 * a; }
-    void ANDN(int a) { colortable[counter]  = 63 - (colortable[counter] & (9 * a)); }
-    void ORCN(int a) { colortable[counter]  = 63 - (colortable[counter] | (9 * a)); }
-    void XORN(int a) { colortable[counter]  = 63 - (colortable[counter] ^ (9 * a)); }
-    void SETN(int a) { colortable[counter]  = 63 - (9 * a); }
+    //void SETC(int A) { colortable[counter]  = A; }    // too similar to STC r?, mem6
     void CREG(int A) { sreg = colortable[A];}
     //void CNRG(int A) { sreg = 63-colortable[A]; }
     void MOV(int a, int b){ // move Ra into Rb; MOV r0,r0 = NOP.
