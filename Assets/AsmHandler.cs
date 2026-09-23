@@ -1,24 +1,12 @@
+using SixBitExtensions;
+
 public class AsmHandler : MonoBehaviour{
-    private List<int> reg = new List<int> { 0, 0, 0, 0, 0, 0, 0, 0 };
-    private int counter = 0;
-    private List<char> data = new List<char>();
-
     private ASM6 asm6;
+    private List<string> program;
 
-    private int fromBinary(string bin) => bin.ToCharArray().AsEnumerable().Reverse()
-        .Select((x,i)=>x=='1'?1<<i:0).Sum();
-    private string binToOct(string bin){
-        List<bool> rBin = bin.ToCharArray().AsEnumerable().Reverse().Select(x=>x=='1').ToList();
-        List<char> ans = new List<char>();
-        int m = 0;
-        for (int i=0; i<rBin.Count; i++){
-            if (rBin[i]) m+= 1 << (i%3);
-            if (i%3==2 || i==rBin.Count - 1) {
-                ans.Add("01234567"[m]);
-                m = 0;
-            }
-        }
-        return ans.AsEnumerable().Reverse().Select(x=>x.ToString()).Aggregate((a,b)=>a+b);
+    public AsmHandler(){
+        asm6 = new ASM6();
+        program = Enumerable.Repeat("000000000000",128);
     }
 
     private bool feed(string bin){
@@ -33,7 +21,7 @@ public class AsmHandler : MonoBehaviour{
                 case 4: asm6.ANDI(Rd, imm6); break;
                 case 5: asm6.ORI(Rd, imm6); break;
                 case 6: asm6.XORI(Rd, imm6); break;
-                default: break;
+                default: return false;
             }
         }
         else{
@@ -58,7 +46,7 @@ public class AsmHandler : MonoBehaviour{
                                 case 4: asm6.LSR(Rd); break;
                                 case 5: asm6.ROL(Rd); break;
                                 case 6: asm6.ROR(Rd); break;
-                                default: break;
+                                default: return false;
                             }
                             break;
                     }
@@ -81,11 +69,11 @@ public class AsmHandler : MonoBehaviour{
                     int addr = fromBinary(bin.Substring(6,6));
                     asm6.DJZ(Rd, addr);
                     break;
-                default: break;
+                default: return false;
             }
         }
-        if (counter & 63 == 63) return false;
-        counter++;
+        if (asm6.counter & 63 == 63) return false;
+        asm6.counter++;
     }
 
     private string commandToString(string bin){
@@ -153,4 +141,19 @@ public class AsmHandler : MonoBehaviour{
         }
     }
 
+    public string registersToString() =>$"{asm6.registers.Select(x => "\tabcdefg0123456789.,!@#$ABCDEFGHIJKLMNOPQRSTUVWXYZ^&*-+=~?<>[]()"[x].ToString())
+            .Aggregate((a,b)=>a+b)}:{asm6.sreg['Z']?"Z":"-"}{asm6.sreg['C']?"C":"-"}{asm6.sreg['N']?"N":"-"}";
+    
+    public void init(List<char> data, List<int> registers){
+        asm6.counter = 0;
+        for (int i=0; i<data.Count; i++) asm6.data[i] = data[i];
+        for (int i=0; i<registers.Count; i++) asm6.registers[i] = registers[i];
+        asm6.sreg['Z'] = false;
+        asm6.sreg['N'] = false;
+        asm6.sreg['C'] = false;
+    }
+
+    public bool run(){
+        return feed(program[asm6.counter]);
+    }
 }
