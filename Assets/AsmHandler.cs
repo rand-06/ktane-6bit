@@ -146,6 +146,7 @@ public class AsmHandler : MonoBehaviour{
     
     public void init(List<char> data, List<int> registers){
         asm6.counter = 0;
+        program = program.Take(128).ToList();
         for (int i=0; i<data.Count; i++) asm6.data[i] = data[i];
         for (int i=0; i<registers.Count; i++) asm6.registers[i] = registers[i];
         asm6.sreg['Z'] = false;

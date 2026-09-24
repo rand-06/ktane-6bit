@@ -16,6 +16,9 @@ public class SixBitScript : MonoBehaviour {
     private AsmHandler asmHandler = new AsmHandler();
     private bool ModuleSolved, highlighted;
 
+    private string currentInputtedBinary = "";
+    private int cursor = 0;
+
     private Coroutine currentCorout;
 
     private string currentMode = "DATA";
@@ -41,8 +44,38 @@ public class SixBitScript : MonoBehaviour {
         if (currentMode == "DATA"){
             currentCorout = StartCoroutine(run());
         }
+        else if (currentInputtedBinary != ""){
+            currentInputtedBinary = "";
+            binaryScreen.text = "";
+        }
+        else{
+            insertionMode = insertionMode == "REPLACE"?"INSERT":"REPLACE";
+            commandScreen.text = insertionMode;
+        }
     }
-    void pressBinary(){}
+    void pressBinary(){
+        //if seeing data - go to prog0, if seeing prog and input is "" - go to data, if input is "0" - delete @ cursor, input "1" - change page, else nothing
+        if (currentMode == "DATA"){
+            currentMode = "PROG0";
+        }
+        else if (currentInputtedBinary == "") currentMode = "DATA";
+        else if (currentInputtedBinary == "0") deleteAtCursor();
+        else if (currentInputtedBinary == "1") currentMode == "PROG0"?"PROG1":"PROG0";
+        render();
+    }
+    void deleteAtCursor(){
+        asmHandler.program.RemoveAt(cursor + (currentMode == "PROG1"?64:0));
+        if (asmHandler.program.Count < 128) asmHandler.program.Add("000000000000");
+    }
+    void render(){
+        List<char> n = currentMode == "DATA"?asmHandler.asm6.data:
+            currentMode=="PROG0"?asmHandler.program.Take(64).Select(s => getChar(fromBinary(s.Substring(0,6)))).ToList():
+            asmHandler.program.Take(128).TakeLast(64).Select(s => getChar(fromBinary(s.Substring(0,6)))).ToList();
+        for (int i=0; i<64; i++){
+            symbols[i].text = n[i].ToString();
+            symbols[i].color = colors[c[i]];
+        }
+    }
 
     IEnumerator run(){
         asmHandler.init();
@@ -83,16 +116,15 @@ public class SixBitScript : MonoBehaviour {
         for (int i=0; i<64; i++)
         {
             char n = getChar(UnityEngine.Random.Range(1, 64));
-            symbols[i].text = n.ToString();
             data.Add(n);
             int c = UnityEngine.Random.Range(1, 64);
-            symbols[i].color = colors[c];
             colortable.Add(c);
             int i1=i;
             hovers[i1].OnInteract += delegate{pressSymbol(i1); return false;};
             hovers[i1].OnHighlight += delegate{hoverSymbol(i1); return false;};
             hovers[i1].OnHighlightEnded += delegate{hoverSymbolEnded(i1); return false;};
         }
+        
     }
 
     void Start () {
@@ -101,6 +133,7 @@ public class SixBitScript : MonoBehaviour {
         commandScreen.OnInteract += delegate{pressCommand(); return false;};
         binaryScreen.OnInteract += delegate{pressBinary(); return false;};
         initBoard();
+        render();
         command.text = "";
         binary.text = "";
 	}
