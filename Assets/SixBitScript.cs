@@ -23,8 +23,23 @@ public class SixBitScript : MonoBehaviour {
 
     private string currentMode = "DATA";
     private string insertionMode = "REPLACE";
+
+    public GameObject cursorRenderer;
     
-    void pressSymbol(int index){}
+
+    void setCursor(int index){
+        if (index == -1) cursorRenderer.SetEnabled(false);
+        else{
+            cursorRenderer.SetEnabled(true);
+            cursorRenderer.transform.position = symbols[index%64].transform.position;
+            cursor = index;
+        }
+
+    }
+    void pressSymbol(int index){
+        if (currentMode == "DATA") return;
+        else setCursor(index + (currentMode == "PROG1"?64:0));
+    }
     void hoverSymbol(int index){
         if (ModuleSolved) return;
         switch (currentMode){
